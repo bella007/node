@@ -1,0 +1,670 @@
+<!DOCTYliE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Node.js</title>
+  <link href="httlis://fonts.googlealiis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewliort" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+  <div class="container">
+ <p> Mongoose - это библиотека JavaScript, часто используемая в приложении Node.js с базой данных MongoDB. В данной статье я собираюсь познакомить вас с Mongoose и MongoDB и, что более важно, показать, где их уместно использовать в вашем приложении.
+</p>
+<h2>Что такое MongoDB?</h2>
+<p>
+Для начала рассмотрим MongoDB. MongoDB - это база данных, которая хранит ваши данные в виде документов. Как правило, эти документы имеют JSON (от англ. JavaScript Object Notation - текстовый формат обмена данными, основанный на JavaScript) - подобную структуру:
+</p>
+<pre class="code">
+{
+  firstName: "Jamie",
+  lastName: "Munro"
+}</pre>
+
+<p>
+Затем документ помещается внутрь коллекции. Например, в вышеуказанном примере документа определяется объект user. Далее этот объект user стал бы, скорее всего, частью коллекции под названием users.</p>
+<p>
+Одна из основных особенностей MongoDB - гибкость структуры её данных. Несмотря на то, что в первом примере объект user имел свойства firstName и lastName, эти свойства могут отсутствовать в других документах user коллекции users. Именно это отличает MongoDB от баз данных SQL (от англ. structured query language — язык структурированных запросов), например, MySQL или Microsoft SQL Server, в которых для каждого объекта, хранящегося в базе данных, необходима фиксированная схема.</p>
+<p>
+За счет способности создавать динамические объекты, которые сохраняются в виде документов в базе данных, в игру вступает Mongoose.</p>
+
+<h2>Что такое Mongoose?</h2>
+<p>
+Mongoose - это ODM (от англ. Object Document Mapper - объектно-документный отобразитель). Это означает, что Mongoose позволяет вам определять объекты со строго-типизированной схемой, соответствующей документу MongoDB.</p>
+<p>
+Mongoose предоставляет огромный набор функциональных возможностей для создания и работы со схемами. На данный момент Mongoose содержит восемь SchemaTypes (типы данных схемы), которые может иметь свойство, сохраняемое в MongoDB. Эти типы следующие:</p>
+<ul>
+<li>String</li>
+<li>Number</li>
+<li>Date</li>
+<li>Buffer</li>
+<li>Boolean</li>
+<li>Mixed</li>
+<li>ObjectId (уникальный идентификатор объекта, первичный ключ, _id)</li>
+<li>Array</li>
+
+</ul>
+<p>Для каждого типа данных можно:</p>
+<ul>
+	<li>задать значение по умолчанию</li>
+	<li>задать пользовательскую функцию проверки данных</li>
+	<li>указать, что поле необходимо заполнить</li>
+	<li>задать get-функцию (геттер), которая позволяет вам проводить манипуляции с данными до их возвращения в виде объекта</li>
+	<li>задать set-функцию (сеттер), которая позволяет вам проводить манипуляции с данными до их сохранения в базу данных</li>
+	<li>определить индексы для более быстрого получения данных</li>
+
+</ul>
+<p>Кроме этих общих возможностей для некоторых типов данных также можно настроить особенности сохранения и получения данных из базы данных. Например, для типа данных String можно указать следующие дополнительные опции:
+</p>
+<ul>
+	<li>конвертация данных в нижний регистр</li>
+	<li>конвертация данных в верхний регистр</li>
+	<li>обрезка данных перед сохранением</li>
+	<li>определение регулярного выражения, которое позволяет в процессе проверки данных ограничить разрешенные для </li>
+	<li>сохранения варианты данны</li>
+	<li>определение перечня, который позволяет установить список допустимых строк</li>
+	<li></li>
+
+</ul>
+
+
+
+
+<p>Для свойств типа Number и Date можно задать минимально и максимально допустимое значение.
+</p>
+<p>
+Большинство из восьми допустимых типов данных должны быть вам хорошо знакомы. Однако, некоторые (Buffer, Mixed, ObjectId и Array) могут вызвать затруднения.
+</p>
+<p>
+Тип данных Buffer позволяет вам сохранять двоичные данные. Типичным примером двоичных данных может послужить изображение или закодированный файл, например, документ в PDF-формате (формат переносимого документа).
+</p>
+<p>
+Тип данных Mixed используется для превращения свойства в "неразборчивое" поле (поле, в котором допустимы данные любого типа). Подобно тому, как многие разработчики используют MongoDB для различных целей, в этом поле можно хранить данные различного типа, поскольку отсутствует определенная структура. С осторожностью используйте этот тип данных, поскольку он ограничивает возможности, предоставляемые Mongoose, например, проверку данных и отслеживание изменений сущности для автоматического обновления свойства при сохранении.</p>
+<p>
+Тип данных ObjectId используется обычно для определения ссылки на другой документ в вашей базе данных. Например, если бы у вас имелась коллекция книг и авторов, документ книги мог бы содержать свойство ObjectId, ссылающееся на определенного автора документа.</p>
+<p>
+Тип данных Array позволяет вам сохранять JavaScript-подобные массивы. Благодаря этому типу данных вы можете выполнять над данными типичные JavaScript операции над массивами, например, push, pop, shift, slice и т.д.
+</p>
+<h2>Краткое повторение</h2>
+<p>
+Перед тем, как двинуться далее и писать код, мне хотелось бы подвести итог того, что мы только что выучили. MongoDB - это база данных, которая позволяет вам сохранять документы с динамической структурой. Эти документы сохраняются внутри коллекции.</p>
+<p>
+<b>Mongoose</b> - это библиотека JavaScript, позволяющая вам определять схемы со строго-типизированными данными. Сразу после определения схемы Mongoose дает вам возможность создать Model (модель), основанную на определенной схеме. Затем модель синхронизируется с документом MongoDB с помощью определения схемы модели.</p>
+<p>
+Сразу после определения схем и моделей вы можете пользоваться различными функциями Mongoose для проверки, сохранения, удаления и запроса ваших данных, используя обычные функции MongoDB. Мы еще рассмотрим это более подробно на конкретных примерах.</p>
+
+<h3>Установка MongoDB</h3>
+<p>
+До того, как начать создавать схемы и модели Mongoose, нам необходимо установить и настроить MongoDB. Я бы порекомендовал вам зайти на страницу загрузки MongoDB. Имеется несколько различных вариантов установки. Я выбрал Community Server. Данный вариант позволяет вам установить версию, предназначенную именно для вашей операционной системы. Также MongoDB предлагает вариант Enterprise Server и вариант облачной установки. Поскольку целые книги можно было бы написать об установке, настройке и мониторинге MongoDB, я остановился на варианте Community Server.</p>
+<p>
+Как только вы загрузили и установили MongoDB для выбранной вами операционной системы, вам необходимо будет запустить базу данных. Вместо того, чтобы заново изобретать колесо, я хотел бы предложить вам почитать документацию MongoDB об установке MongoDB версии Community.</p>
+<p>
+Я подожду вас, пока вы настроите MongoDB. Как только вы справились с вышесказанным, мы можем перейти к инсталляции Mongoose для соединения с вашей только что установленной базой данных MongoDB.
+</p>
+<h3>Установка Mongoose</h3>
+<p>
+Mongoose - это библиотека JavaScript. Я собираюсь использовать её в приложении Node.js. Если у вас уже установлен Node.js, то вы можете перейти к следующему разделу. Если же не установлен, я рекомендую вам начать с посещения страницы загрузки Node.js и выбора установщика для вашей операционной системы.</p>
+<p>
+Как только Node.js установлен и настроен, я собираюсь создать новое приложение и затем установить NPM (от англ. Node Package Manager - диспетчер пакетов Node) модуль Mongoose.</p>
+<p>
+После перехода в консоли в папку, куда бы вы хотели установить ваше приложение, вы можете выполнить следующие команды:</p>
+<pre class="code">
+
+mkdir mongoose_basics
+cd mongoose_basics
+npm init
+</pre>
+<p>
+При инициализации моего приложения я оставил значения всех запрашиваемых параметров по умолчанию. Теперь я установлю модуль mongoose следующим образом:</p>
+<pre class="code">
+
+npm install mongoose --save
+</pre>
+<p>
+После выполнения всех необходимых предварительных условий, давайте подключимся к базе данных MongoDB. Я разместил следующий код в файле index.js, поскольку я выбрал его как стартовую точку моего приложения:</p>
+<pre class="code">
+
+var mongoose = require('mongoose');
+ 
+mongoose.connect('mongodb://localhost/mongoose_basics');
+</pre>
+<p>
+В первой строке кода мы подключаем библиотеку mongoose. Далее я открываю соединение с базой данных, которую я назвал mongoose_basics, используя функцию connect.
+</p>
+<p>
+Функция connect принимает еще два других необязательных параметра. Второй параметр - объект опций, где вы можете указать, при необходимости, например, username (имя пользователя) и password (пароль). Третий параметр, который также может быть и вторым, если у вас не определены опции, - это функция обратного вызова, которая будет вызвана после попытки соединения с базой данных. Функцию обратного вызова можно использовать двумя способами:</p>
+<pre class="code">
+
+mongoose.connect(uri, options, function(error) {
+ 
+// Check error in initial connection. There is no 2nd param to the callback.
+ 
+});
+ 
+// Or using promises
+ 
+mongoose.connect(uri, options).then(
+ 
+() => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
+ 
+err => { /** handle initial connection error */ }
+ 
+);
+</pre>
+<p>
+Чтобы избежать потенциальной необходимости введения в JavaScript Promises, я буду использовать первый способ. Ниже приводится обновленный index.js::</p>
+<pre class="code">
+
+var mongoose = require('mongoose');
+ 
+mongoose.connect('mongodb://localhost/mongoose_basics', function (err) {
+ 
+   if (err) throw err;
+ 
+   console.log('Successfully connected');
+ 
+});</pre>
+<p>
+В случае ошибки при подключении к базе данных выбрасывается исключение, и все дальнейшее исполнение функции прерывается. При отсутствии ошибки в консоль выводится сообщение об успешном соединении.
+</p>
+<p>
+Теперь Mongoose установлена и подключена к базе данных под названием mongoose_basics. Мое соединение с MongoDB не использует ни username, ни password, ни пользовательского порта. Если вам необходимо указать эти опции или любую другую при подключении, я рекомендую вам просмотреть документацию Mongoose по подключению. В документации дается объяснение как многих доступных опций, так и процесса создания нескольких соединений, объединения соединений, реплик и т.д.
+</p><p>
+После удачного соединения давайте перейдем к определению схемы.   
+</p>
+<h2>Определение Mongoose Schema (схемы)</h2>
+
+
+
+<p>
+В начале статьи я показал вам объект user, который имел два свойства: firstName и lastName. В следующем примере я переделал этот документ в схему:</p>
+<pre class="code">
+
+var userSchema = mongoose.Schema({
+    firstName: String,
+    lastName: String
+});</pre><p>
+Это очень простая схема, которая содержит всего лишь два свойства без атрибутов, связанных с ней. Давайте распространим наш пример, сделав свойства first и last name дочерними объектами свойства name. Свойство name будет содержать свойства first и last name. Также я добавлю свойство created типа Date.</p>
+<pre class="code">
+
+var userSchema = mongoose.Schema({
+    name: {
+      firstName: String,
+    lastName: String
+    },
+    created: Date
+});</pre><p>
+Как вы видите, Mongoose позволяет мне создавать очень гибкие схемы со множеством возможных комбинаций организации данных.
+</p><p>
+В следующем примере я собираюсь создать две новые схемы (author и book) и показать вам, как создать связь с другой схемой. Схема book будет содержать ссылку на схему author.</p>
+<pre class="code">
+
+var authorSchema = mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId,
+    name: {
+            firstName: String,
+        lastName: String
+    },
+    biography: String,
+    twitter: String,
+    facebook: String,
+    linkedin: String,
+    profilePicture: Buffer,
+    created: { 
+        type: Date,
+        default: Date.now
+    }
+});</pre>
+<p>
+Выше приводится схема author, которая распространяет схему user, что я создал в предыдущем примере. Чтобы связать Author и Book, в схеме author первым свойством указываем _id типа ObjectId. _id - это стандартный синтаксис для обозначения первичного ключа в Mongoose и MongoDB. Далее, как и в схеме user, я определил свойство name, содержащее first и last name автора.
+</p><p>
+Распространяя схему user, схема author содержит несколько дополнительных свойств типа String. Также я добавил свойство типа Buffer, в котором можно было бы расположить изображение профиля автора. Последнее свойство содержит дату создания автора; однако, вы можете обратить внимание, что оно создано немного по-иному, так как в нем указано значение по умолчанию "сейчас". При сохранении автора в базу данных, данному свойству будет присвоено значение текущей даты/времени.
+</p><p>
+Чтобы завершить примеры схем, давайте создадим схему book, которая содержит ссылку на автора, за счет использования свойства типа ObjectId.</p>
+<pre class="code">
+
+var bookSchema = mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId,
+    title: String,
+    summary: String,
+    isbn: String,
+    thumbnail: Buffer,
+    author: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Author'
+    },
+    ratings: [
+        {
+            summary: String,
+            detail: String,
+            numberOfStars: Number,
+            created: { 
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
+    created: { 
+        type: Date,
+        default: Date.now
+    }
+});</pre>
+<p>
+Схема book содержит несколько свойств типа String. Как было упомянуто ранее, эта схема содержит ссылку на схему author. Схема book также содержит свойство ratings типа Array,  чтобы продемонстрировать вам возможности определения схем. Каждый элемент этого массива содержит свойства summary, detail, numberOfStars и created date.
+</p><p>
+Mongoose дает вам возможность создавать схемы со ссылками на другие схемы или, как в примере выше со свойством ratings, позволяет создавать Array дочерних свойств, который может содержаться в привязанной схеме (author в нашем примере) или же в текущей схеме, как в примере выше (схема book со свойством ratings типа Array).
+</p><p>
+Создание и сохранение Mongoose Models (моделей)
+</p><p>
+Поскольку на примере схем author и book мы увидели гибкость схемы Mongoose, я собираюсь продолжить использовать их и создать на их основе модели Author и Book.</p>
+<pre class="code">
+
+var Author = mongoose.model('Author', authorSchema);
+ 
+var Book = mongoose.model('Book', bookSchema);</pre>
+<p>
+После сохранения модели в MongoDB создается Document (документ) с теми же свойствами, что определены в схеме, на основе которой была создана модель.
+</p>
+<p>
+Чтобы продемонстрировать создание и сохранение объекта, в следующем примере я собираюсь создать несколько объектов: одну модель Author и несколько моделей Book. Сразу после создания эти объекты будут сохранены в MongoDB при помощи метода модели save.</p>
+<pre class="code">
+
+var jamieAuthor = new Author {
+    _id: new mongoose.Types.ObjectId(),
+    name: {
+        firstName: 'Jamie',
+        lastName: 'Munro'
+    },
+    biography: 'Jamie is the author of ASP.NET MVC 5 with Bootstrap and Knockout.js.',
+    twitter: 'https://twitter.com/endyourif',
+    facebook: 'https://www.facebook.com/End-Your-If-194251957252562/'
+};
+ 
+jamieAuthor.save(function(err) {
+    if (err) throw err;
+     
+    console.log('Author successfully saved.');
+     
+    var mvcBook = new Book {
+            _id: new mongoose.Types.ObjectId(),
+            title: 'ASP.NET MVC 5 with Bootstrap and Knockout.js',
+            author: jamieAuthor._id,
+            ratings:[{
+                summary: 'Great read'
+            }]
+    };
+     
+    mvcBook.save(function(err) {
+        if (err) throw err;
+     
+        console.log('Book successfully saved.');
+    });
+     
+    var knockoutBook = new Book {
+            _id: new mongoose.Types.ObjectId(),
+            title: 'Knockout.js: Building Dynamic Client-Side Web Applications',
+            author: jamieAuthor._id
+    };
+     
+    knockoutBook.save(function(err) {
+        if (err) throw err;
+     
+        console.log('Book successfully saved.');
+    });
+});</pre>
+<p>
+В примере выше я самым бессовестным образом разместил ссылки на две мои новые книги. В начале примера мы создаем и сохраняем jamieObject, созданный при помощи модели Author. В случае ошибки внутри функции save объекта jamieObject приложение выбросит исключение. В случае же отсутствия ошибки внутри функции save будут созданы и сохранены два объекта book. Подобно объекту jamieObject, в этих объектах в случае возникновения ошибки при сохранении выбрасывается исключение. В ином случае в консоль выводится сообщение об успешном сохранении.
+</p><p>
+Для создания ссылки на Author, оба объекта book ссылаются на первичный ключ _id схемы author в свойстве author схемы book.</p>
+<p>
+Проверка данных перед сохранением</p>
+<p>
+Общепринято наполнение данных для создания модели в форме на веб-странице. По этой причине, хорошо бы проверить эти данные перед сохранением модели в MongoDB.</p>
+<p>
+В следующем примере я обновил предыдущую схему author, добавив проверку данных следующих свойств: firstName, twitter, facebook и linkedin.</p>
+<pre class="code">
+
+var authorSchema = mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId,
+    name: {
+        firstName: {
+            type: String,
+            required: true
+        },
+        lastName: String
+    },
+    biography: String,
+    twitter: {
+        type: String,
+        validate: {
+            validator: function(text) {
+                return text.indexOf('https://twitter.com/') === 0;
+            },
+            message: 'Twitter handle must start with https://twitter.com/'
+        }
+    },
+    facebook: {
+        type: String,
+        validate: {
+            validator: function(text) {
+                return text.indexOf('https://www.facebook.com/') === 0;
+            },
+            message: 'Facebook must start with https://www.facebook.com/'
+        }
+    },
+    linkedin: {
+        type: String,
+        validate: {
+            validator: function(text) {
+                return text.indexOf('https://www.linkedin.com/') === 0;
+            },
+            message: 'LinkedIn must start with https://www.linkedin.com/'
+        }
+    },
+    profilePicture: Buffer,
+    created: { 
+        type: Date,
+        default: Date.now
+    }
+});</pre>
+<p>
+Для свойства firstName был задан атрибут required. Теперь при вызове функции save, Mongoose вернет ошибку с сообщением о необходимости указания значения свойства firstName. Я решил сделать свойство lastName без необходимости указания его значения на случай, если авторами в моей базе данных были бы Cher или Madonna (отсутствует фамилия).
+</p><p>
+Для всех свойств twitter, facebook и linkedin используются подобные пользовательские валидаторы. Для всех свойств происходит поверка соответствия начала их значений соответствующему доменному имени социальных сетей. Поскольку это необязательные для заполнения поля, валидатор применяется только в случае поступления данных для этого свойства.</p>
+<p>
+Поиск и обновление данных</p>
+<p>
+Введение в Mongoose не было бы завершенным без примера поиска записи и обновления одного или более свойств этого объекта.</p>
+<p>
+Mongoose предоставляет несколько различных функций для поиска данных определенной модели. Эти функции следующие: find, findOne и findById.</p>
+<p>
+Функции find и findOne получают в качестве аргумента объект, позволяющий осуществлять сложные запросы. Функция же findById получает только одно значение функции обратного вызова (скоро будет пример). В следующем примере я продемонстрирую вам, как можно сделать выборку книг, содержащих в своем названии строку 'mvc'.</p>
+<pre class="code">
+
+Book.find({
+    title: /mvc/i
+}).exec(function(err, books) {
+    if (err) throw err;
+     
+    console.log(books);
+});</pre>
+<p>
+Внутри функции find я осуществляю поиск нечувствительной к регистру строки 'mvc' по свойству title. Это осуществляется с помощью того же синтаксиса, что используется для поиска строки в JavaScript.
+</p>
+<p>
+Функцию find таккже можно "прицепить" к другим методам запроса, например, where, and, or, limit, sort, any и т.д.
+</p><p>
+Давайте распространим наш предыдущий пример, ограничив количество результатов до пяти первых книг и отсортировав их по дате создания по убыванию. Результатом будут первые пять наиболее новых книг, содержащих в названии строку 'mvc'.</p>
+<pre class="code">
+
+Book.find({
+    title: /mvc/i
+}).sort('-created')
+.limit(5)
+.exec(function(err, books) {
+    if (err) throw err;
+     
+    console.log(books);
+});</pre>
+<p>
+После применения функции find порядок последующих функций не имеет значения, поскольку из всех сцепленных функций формируется единый запрос и функции не выполняются до вызова функции exec.
+</p>
+<p>
+Как я упоминал ранее, функция findById выполняется немного по-другому. Она выполняется сразу же и принимает в качестве одного из аргументов функцию обратного вызова, и не позволяет "сцепление" функций. В следующем примере я запрашиваю необходимого автора по его _id.</p>
+<pre class="code">
+
+Author.findById('59b31406beefa1082819e72f', function(err, author) {
+    if (err) throw err;
+     
+    console.log(author);
+});</pre>
+<p>
+У вас значение _id может быть немного другим. Я скопировал значение _id из предыдущего console.log, когда осуществляли поиск книг, содержащих в названии строку 'mvc'.
+</p><p>
+Сразу после возвращения объекта вы можете изменить любое из его свойств и обновить его. Как только вы внесли необходимые изменения, вы вызываете метод save также, как вы делали и при создании объекта. В следующем примере я распространю пример с функцией findbyId и обновлю свойство linkedin автора.</p>
+<pre class="code">
+
+Author.findById('59b31406beefa1082819e72f', function(err, author) {
+    if (err) throw err;
+     
+    author.linkedin = 'https://www.linkedin.com/in/jamie-munro-8064ba1a/';
+     
+    author.save(function(err) {
+        if (err) throw err;
+         
+        console.log('Author updated successfully');
+    });
+});</pre>
+<p>
+После успешного получения автора устанавливается значение свойства linkedin и вызывается функция save. Mongoose способна заметить изменение свойства linkedin и передать состояние, обновленное только по модифицированным свойствам, в MongoDB. В случае возникновения ошибки при сохранении будет выброшено исключение и приложение прекратит работу. При отсутствии ошибок в консоль будет выведено сообщение об успешном изменении.
+</p><p>
+Также Mongoose предоставляет возможность найти объект и сразу обновить его при помощи функций с соответствующими названиями: findByIdAndUpdate и findOneAndUpdate. Давайте обновим предыдущий пример, чтобы показать функцию findByIdAndUpdate в действии.</p>
+<pre class="code">
+
+Author.findByIdAndUpdate('59b31406beefa1082819e72f', 
+    { linkedin: 'https://www.linkedin.com/in/jamie-munro-8064ba1a/' }, 
+    function(err, author) {
+        if (err) throw err;
+     
+        console.log(author);
+});</pre>
+<p>
+В предыдущем примере свойства, что мы хотим обновить, передаются в функцию findByIdAndUpdate как объект вторым параметром. При этом функция обратного вызова является третьим параметром. После удачного обновления возвращенный объект author содержит обновленную информацию. Он выводиться в консоль, чтобы мы увидели обновленные свойства автора.</p>
+<hr>
+<h1>Полный код примера</h1>
+<p>
+По ходу статьи мы рассматривали кусочки кода, описывающие работу отдельных действий, например, создание схемы, создание модели и т.д. Давайте теперь воссоединим все воедино в одном полном примере.
+</p>
+<p>
+Для начала я создал два дополнительных файла: author.js и book.js. Данные файлы содержат соответствующие оределения схем и создание моделей. Последняя строка кода делает модель доступной для использования в файле index.js.</p>
+<p>
+Давайте начнем с файла author.js:
+</p>
+<pre class="code">
+var mongoose = require('mongoose');
+ 
+var authorSchema = mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId,
+    name: {
+        firstName: {
+            type: String,
+            required: true
+        },
+        lastName: String
+    },
+    biography: String,
+    twitter: {
+        type: String,
+        validate: {
+            validator: function(text) {
+                return text.indexOf('https://twitter.com/') === 0;
+            },
+            message: 'Twitter handle must start with https://twitter.com/'
+        }
+    },
+    facebook: {
+        type: String,
+        validate: {
+            validator: function(text) {
+                return text.indexOf('https://www.facebook.com/') === 0;
+            },
+            message: 'Facebook must start with https://www.facebook.com/'
+        }
+    },
+    linkedin: {
+        type: String,
+        validate: {
+            validator: function(text) {
+                return text.indexOf('https://www.linkedin.com/') === 0;
+            },
+            message: 'LinkedIn must start with https://www.linkedin.com/'
+        }
+    },
+    profilePicture: Buffer,
+    created: { 
+        type: Date,
+        default: Date.now
+    }
+});
+ 
+var Author = mongoose.model('Author', authorSchema);
+ 
+module.exports = Author;
+</pre>
+<p>Далее переходим к файлу book.js:</p>
+<pre class="code">
+var mongoose = require('mongoose');
+ 
+var bookSchema = mongoose.Schema({
+    _id: mongoose.Schema.Types.ObjectId,
+    title: String,
+    summary: String,
+    isbn: String,
+    thumbnail: Buffer,
+    author: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Author'
+    },
+    ratings: [
+        {
+            summary: String,
+            detail: String,
+            numberOfStars: Number,
+            created: { 
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
+    created: { 
+        type: Date,
+        default: Date.now
+    }
+});
+ 
+var Book = mongoose.model('Book', bookSchema);
+ 
+module.exports = Book;
+</pre>
+<p>И, наконец, обновленнй файл index.js:</p>
+<pre class="code">
+var mongoose = require('mongoose');
+ 
+var Author = require('./author');
+var Book = require('./book');
+ 
+mongoose.connect('mongodb://localhost/mongoose_basics', function (err) {
+    if (err) throw err;
+     
+    console.log('Successfully connected');
+     
+    var jamieAuthor = new Author({
+        _id: new mongoose.Types.ObjectId(),
+        name: {
+            firstName: 'Jamie',
+            lastName: 'Munro'
+        },
+        biography: 'Jamie is the author of ASP.NET MVC 5 with Bootstrap and Knockout.js.',
+        twitter: 'https://twitter.com/endyourif',
+        facebook: 'https://www.facebook.com/End-Your-If-194251957252562/'
+    });
+ 
+    jamieAuthor.save(function(err) {
+        if (err) throw err;
+         
+        console.log('Author successfully saved.');
+         
+        var mvcBook = new Book({
+            _id: new mongoose.Types.ObjectId(),
+            title: 'ASP.NET MVC 5 with Bootstrap and Knockout.js',
+            author: jamieAuthor._id,
+            ratings:[{
+                summary: 'Great read'
+            }]
+        });
+         
+        mvcBook.save(function(err) {
+            if (err) throw err;
+         
+            console.log('Book successfully saved.');
+        });
+         
+        var knockoutBook = new Book({
+            _id: new mongoose.Types.ObjectId(),
+            title: 'Knockout.js: Building Dynamic Client-Side Web Applications',
+            author: jamieAuthor._id
+        });
+         
+        knockoutBook.save(function(err) {
+            if (err) throw err;
+         
+            console.log('Book successfully saved.');
+        });
+    });
+});</pre>
+<p>
+В вышеуказанном примере все действия Mongoose содержатся внутри функции connect. Файлы author и book подключаются при помощи функции require после подключения mongoose.
+</p>
+<p>Если MongoDB запущена, вы теперь можете запустить полное приложение Node.js при помощи следующей команды:
+</p>
+<pre class="code">
+node index.js</pre>
+<p>После сохранения некоторых данных в базу я обновил файл index.js, добавив функции поиска, следующим образом:
+</p>
+<pre class="code">
+var mongoose = require('mongoose');
+ 
+var Author = require('./author');
+var Book = require('./book');
+ 
+mongoose.connect('mongodb://localhost/mongoose_basics', function (err) {
+    if (err) throw err;
+     
+    console.log('Successfully connected');
+     
+    Book.find({
+        title: /mvc/i
+    }).sort('-created')
+    .limit(5)
+    .exec(function(err, books) {
+        if (err) throw err;
+         
+        console.log(books);
+    });
+     
+    Author.findById('59b31406beefa1082819e72f', function(err, author) {
+        if (err) throw err;
+         
+        author.linkedin = 'https://www.linkedin.com/in/jamie-munro-8064ba1a/';
+         
+        author.save(function(err) {
+            if (err) throw err;
+             
+            console.log('Author updated successfully');
+        });
+    });
+     
+    Author.findByIdAndUpdate('59b31406beefa1082819e72f', 
+	{ linkedin: 'https://www.linkedin.com/in/jamie-munro-8064ba1a/' }, 
+	function(err, author) {
+        if (err) throw err;
+         
+        console.log(author);
+    });
+});
+</pre>
+<p>Опять-таки, вы можете запустить приложение при помощи следующей команды :<i>i node index.js</i>.
+</p>
+<h2>Резюме</h2>
+<p>
+После прочтения данной статьи вы должны быть в состоянии создавать чрезвычайно гибкие схемы и модели Mongoose, осуществлять простую или сложную проверку данных, создавать и обновлять документы и, наконец, осуществлять поиск созданных документов.
+</p>
+<p>
+Надеюсь, теперь вы чувствуете себя уверенным пользователем Mongoose. Если вы хотите узнать больше о Mongoose, я бы рекомендовал вам изучить Mongoose Guides, в котором объясняются более продвинутые темы, например, population, middleware, promises и т.д.
+</p>
+<h3> Удачной охоты (да простят меня мангусты)!</h3>
+
+  </div>
+</body>
+</html>

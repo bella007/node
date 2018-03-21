@@ -1,0 +1,23 @@
+extends layout
+
+block content
+	div.container
+		div.row
+			div.col-sm-12.col-md-12
+				-for (let i=0; i<blogs.length; i++){
+					.blog(data-id=''+blogs[i]._id+'')
+						h4 #{blogs[i].title}
+						p #{blogs[i].content}
+						button(class="dellpost") dellpost
+					- }
+			div.col-sm-12.col-md-12
+				.jumbotron
+					.container
+						form(action="/addpost" method="POST")
+							.row
+								input(type="text" placeholder="Blog title" maxlength="150" name="title")
+							.row
+								textarea(type="text" placeholder="Blog text" rows="15" cols="150" name="content")
+							.row
+								button(type="submit") placeblog
+								a(href='/signout', class='text-center new-account') Sign Out

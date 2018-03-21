@@ -1,0 +1,18 @@
+extends layout
+block content
+    content
+        - var x = goods;
+        div
+            ul
+                mixin card(item)
+                    a(href='/'+item.id+'')
+                        div.card(data-id=item.id)
+                            img.imgGoods(src=item.img)
+                            h3=item.nameOfGoods
+                            h5 price #{item.price} uah
+                            p=item.opisanie
+                - for (var i=0; i<x.length; i++) {
+                    -if(x[i].id == idd){    
+                        +card(x[i])
+                    -}
+                - }

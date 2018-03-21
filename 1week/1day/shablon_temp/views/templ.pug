@@ -1,0 +1,17 @@
+extends layout
+block content
+		- var x = goods;
+		div
+			ul
+				mixin card(item)
+					a(href='/'+item.id+'')
+						div.card
+							img.imgGoods(src=item.img)
+							h3=item.nameOfGoods
+							h5 price #{item.price} uah
+							p=item.opisanie
+
+				- for (var i=0; i<x.length; i++) {	
+					+card(x[i])
+				- }
+		p  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus repellat, quisquam debitis tempora inventore quia reprehenderit fugiat fuga fugit repudiandae voluptatum dolore! Ab praesentium vero et quia, consequatur, ipsa dignissimos quos temporibus nesciunt consequuntur, minima, tempore harum. Rerum at, nostrum, voluptate sint accusantium, assumenda fugiat voluptates minima mollitia quos velit!

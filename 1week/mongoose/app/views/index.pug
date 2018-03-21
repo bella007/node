@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  form(action='/abc', method='POST')
+    input(type="text", action="", name='firstName')
+    input(type="text", action="", name='lastName')
+    input(type="password", action="", name='password')
+    button(type='submit') Click on Me

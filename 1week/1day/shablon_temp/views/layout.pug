@@ -1,0 +1,17 @@
+doctype(html)
+html
+	head
+		title= title
+		link(rel="stylesheet", href="style/style.css")
+	body
+		h1 Hello pugy
+		-if(name=='namePug'){
+			p=name
+		-}else{
+			p Hello
+		-}
+		
+		img(src='img/cat1.jpg')
+
+block content
+include footer
